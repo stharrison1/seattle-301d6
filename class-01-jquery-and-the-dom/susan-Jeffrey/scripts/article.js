@@ -1,11 +1,11 @@
 var articles = [];
 
 function Article (opts) {
-  // this.title = opts.title;
-  // this.category = opts.category;
-  // this.author = opts.author;
-  // this.authorUrl = opts.authorUrl;
-  // this.publishedOn = opts.publishedOn;
+  this.title = opts.title;
+  this.category = opts.category;
+  this.author = opts.author;
+  this.authorUrl = opts.authorUrl;
+  this.publishedOn = opts.publishedOn;
   this.body = opts.body;
 }
 
@@ -15,13 +15,10 @@ Article.prototype.toHtml = function() {
 
   $newArticle.attr('data-category', this.category);
 
-  // $newArticle.find('h1').text(this.title);
-
-  // TODO: Use jQuery to fill in the template with properties
-  // from this particular Article instance. We need to fill in:
-  // the author name and url, the article title and body, and the
-  // publication date.
-
+  $newArticle.find('h1').html(this.title);
+  $newArticle.find('address a').attr('href', this.authorUrl);
+  $newArticle.find('address a').html(this.author);
+  $newArticle.find('.article-body').html(this.body);
 
   // Include the publication date as a 'title' attribute to show on hover:
   $newArticle.find('time[pubdate]').attr('title', this.publishedOn)
@@ -32,7 +29,7 @@ Article.prototype.toHtml = function() {
   $newArticle.append('<hr>');
 
   // TODO: This cloned article is no longer a template, so we should remove that class...
-
+  $newArticle.removeClass('template');
   return $newArticle;
 }
 
