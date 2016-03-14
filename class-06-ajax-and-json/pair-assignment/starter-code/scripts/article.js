@@ -1,4 +1,4 @@
-function Article (opts) {
+function Article(opts) {
   this.author = opts.author;
   this.authorUrl = opts.authorUrl;
   this.title = opts.title;
@@ -17,7 +17,7 @@ Article.all = [];
 Article.prototype.toHtml = function() {
   var template = Handlebars.compile($('#article-template').text());
 
-  this.daysAgo = parseInt((new Date() - new Date(this.publishedOn))/60/60/24/1000);
+  this.daysAgo = parseInt((new Date() - new Date(this.publishedOn)) / 60 / 60 / 24 / 1000);
   this.publishStatus = this.publishedOn ? 'published ' + this.daysAgo + ' days ago' : '(draft)';
   this.body = marked(this.body);
 
@@ -32,7 +32,7 @@ Article.prototype.toHtml = function() {
 // and use it to instantiate all the articles. This code is moved from elsewhere, and
 // encapsulated in a simply-named function for clarity.
 Article.loadAll = function(rawData) {
-  rawData.sort(function(a,b) {
+  rawData.sort(function(a, b) {
     return (new Date(b.publishedOn)) - (new Date(a.publishedOn));
   });
 
@@ -44,25 +44,35 @@ Article.loadAll = function(rawData) {
 // This function will retrieve the data from either a local or remote source,
 // and process it, then hand off control to the View.
 Article.fetchAll = function() {
-  if (localStorage.rawData) {
-    // When rawData is already in localStorage,
-    // we can load it by calling the .loadAll function,
-    // and then render the index page (using the proper method on the articleView object).
-    Article.loadAll(JSON.parse(localStorage.rawData));
-    //DONE: What do we pass in here to the .loadAll function?
+  var localEtag;
+  $.ajax({
+    type: 'HEAD',
+    url: '/data/hackerIpsum.json',
+    success: function(data, message, xhr) {
+        localEtag = xhr.getResponseHeader('eTag');
+        localStorage.setItem('eTag', localEtag);
+        if (localStorage.eTag === xhr.getResponseHeader('eTag') && localStorage.rawData) {
+          console.log(localStorage.eTag);
+          // When rawData is already in localStorage,
+          // we can load it by calling the .loadAll function,
+          // and then render the index page (using the proper method on the articleView object).
+          Article.loadAll(JSON.parse(localStorage.rawData));
+          //DONE: What do we pass in here to the .loadAll function?
 
-    articleView.initIndexPage();//DONE: Change this fake method call to the correct one that will render the index page.
-  } else {
-    // DONE: When we don't already have the rawData, we need to:
-    // 1. Retrieve the JSON file from the server with AJAX (which jQuery method is best for this?),
-    $.getJSON('/data/hackerIpsum.json', function(cd ) {
+          articleView.initIndexPage(); //DONE: Change this fake method call to the correct one that will render the index page.
+        } else {
+          $.getJSON('/data/hackerIpsum.json', function(rawData) {
+            Article.loadAll(rawData);
+            localStorage.rawData = JSON.stringify(rawData);
+            articleView.initIndexPage();
+          });
+        }
+      }
+      // DONE: When we don't already have the rawData, we need to:
+      // 1. Retrieve the JSON file from the server with AJAX (which jQuery method is best for this?),
       // 2. Store the resulting JSON data with the .loadAll method,
-      Article.loadAll(rawData);
-      localStorage.rawData = JSON.stringify(rawData);
-      articleView.initIndexPage();
-    });
-    // 3. Cache it in localStorage so we can skip the server call next time,
-    // 4. And then render the index page (perhaps with an articleView method?).
+      // 3. Cache it in localStorage so we can skip the server call next time,
+      // 4. And then render the index page (perhaps with an articleView method?).
       // articleView method
-  }
-}
+  })
+};
