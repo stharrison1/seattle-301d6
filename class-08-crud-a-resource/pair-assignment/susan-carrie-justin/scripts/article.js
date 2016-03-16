@@ -21,8 +21,9 @@
 
   // DONE: Set up a DB table for articles.
   Article.createTable = function(callback) {
-  webDB.execute(
-    'CREATE TABLE articles(id INTEGER PRIMARY KEY, title VARCHAR(200), body VARCHAR(3000), category VARCHAR(200), author VARCHAR(200), author_url VARCHAR(200), published_on VARCHAR(200));',
+  webDB.execute([
+    'DROP TABLE articles;',
+    'CREATE TABLE articles(id INTEGER PRIMARY KEY, title VARCHAR(200), body VARCHAR(3000), category VARCHAR(200), author VARCHAR(200), author_url VARCHAR(200), published_on VARCHAR(200));'],
     function(result) {
       console.log('Successfully set up the articles table.', result);
       if (callback) callback();
@@ -30,22 +31,22 @@
   );
 };
 
-  // TODO: Use correct SQL syntax to delete all records from the articles table.
+  // DONE: Use correct SQL syntax to delete all records from the articles table.
   Article.truncateTable = function(callback) {
     webDB.execute(
-      'DELETE ...;', // <----finish the command here, inside the quotes.
+      'DELETE FROM articles;', // <----finish the command here, inside the quotes.
       callback
     );
   };
 
 
-  // TODO: Insert an article instance into the database:
+  // DONE: Insert an article instance into the database:
   Article.prototype.insertRecord = function(callback) {
     webDB.execute(
       [
         {
-          'sql': '...;',
-          'data': [],
+          'sql': 'INSERT INTO articles(title, body, category, author, author_url, published_on) VALUES(?,?,?,?,?,?);',
+          'data': [this.title, this.body, this.category, this.author, this.authorUrl, this.publishedOn],
         }
       ],
       callback
