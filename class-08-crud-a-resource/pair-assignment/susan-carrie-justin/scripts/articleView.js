@@ -12,14 +12,25 @@
     }, {})
   }
 
+  function viewRecord(record) {
+    $('#article-title').val(record.title);
+    $('#article-body').text(record.body);
+    $('#article-author').val(record.author);
+    $('#article-author-url').val(record.author_url);
+    $('#article-category').val(record.category);
+    $('#article-published').prop('checked', true);
+  }
+
   function loadEditArticle() {
     var queries = extractQueryString();
     if (queries.hasOwnProperty('id')) {
       webDB.execute([{
         'sql': 'SELECT * FROM articles where id=?',
         'data': [queries.id]
-      }], function (data) {
-        console.log(data);
+      }], function (rows) {
+        if (rows.length == 1) {
+          viewRecord(rows[0]);
+        }
       });
     }
   }
