@@ -22,7 +22,7 @@
   // DONE: Set up a DB table for articles.
   Article.createTable = function(callback) {
   webDB.execute([
-    // 'DROP TABLE articles;',
+    'DROP TABLE articles;',
     'CREATE TABLE articles(id INTEGER PRIMARY KEY, title VARCHAR(200), body VARCHAR(3000), category VARCHAR(200), author VARCHAR(200), author_url VARCHAR(200), published_on VARCHAR(200));'],
     function(result) {
       console.log('Successfully set up the articles table.', result);
@@ -69,10 +69,10 @@
   // DONE: Update an article instance, overwriting it's properties into the corresponding record in the database:
   Article.prototype.updateRecord = function(callback) {
     webDB.execute(
-      [
+      [ {
         'sql': 'UPDATE articles SET title=?, body=?, category=?, author=?, author_url=?, published_on=? WHERE title=?',
         'data': [this.title, this.body, this.category, this.author, this.authorUrl, this.publishedOn, this.title]
-      ],
+      }],
       callback
     );
   };
@@ -84,13 +84,13 @@
     });
   };
 
-  // TODO: Refactor this to check if the database holds any records or not. If the DB is empty,
+  // DONE: Refactor this to check if the database holds any records or not. If the DB is empty,
   // we need to retrieve the JSON and process it.
   // If the DB has data already, we'll load up the data (sorted!), and then hand off control to the View.
   Article.fetchAll = function(next) {
     webDB.execute('SELECT * FROM articles', function(rows) { // DONE: fill these quotes to 'select' our table.
       if (rows.length) {
-        Article.loadAll();
+        Article.loadAll(rows);
         next();
         // DONE: Now, 1st - instanitate those rows with the .loadAll function,
         // and 2nd - pass control to the view by calling whatever function argument was passed in.
@@ -99,13 +99,16 @@
           // Cache the json, so we don't need to request it next time:
           rawData.forEach(function(item) {
             var article = new Article(item); // Instantiate an article based on item from JSON
-            // TODO: Cache the newly-instantiated article in the DB: (what can we call on each 'article'?)
+            // DONE: Cache the newly-instantiated article in the DB: (what can we call on each 'article'?)
+            article.insertRecord();
 
           });
           // Now get ALL the records out the DB, with their database IDs:
-          webDB.execute('', function(rows) { // TODO: select our now full table
-            // TODO: Now, 1st - instanitate those rows with the .loadAll function,
+          webDB.execute('SELECT * FROM articles', function(rows) { // DONE: select our now full table
+            // DONE: Now, 1st - instanitate those rows with the .loadAll function,
+            Article.loadAll(rows);
             // and 2nd - pass control to the view by calling whatever function argument was passed in.
+            next();
 
           });
         });
