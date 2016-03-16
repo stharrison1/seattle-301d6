@@ -3,6 +3,27 @@
   // Configure a view object, to hold all our functions for dynamic updates and article-related event handlers.
   var articleView = {};
 
+  function extractQueryString() {
+    var queryString = window.location.search;
+    return queryString.substring(1).split('&').reduce(function (obj, cur) {
+      var kv = cur.split('=');
+      obj[kv[0]] = kv[1];
+      return obj;
+    }, {})
+  }
+
+  function loadEditArticle() {
+    var queries = extractQueryString();
+    if (queries.hasOwnProperty('id')) {
+      webDB.execute([{
+        'sql': 'SELECT * FROM articles where id=?',
+        'data': [queries.id]
+      }], function (data) {
+        console.log(data);
+      });
+    }
+  }
+
   articleView.populateFilters = function() {
     $('article').each(function() {
       if (!$(this).hasClass('template')) {
@@ -72,6 +93,7 @@
     });
 
     $('#new-form').on('change', 'input, textarea', articleView.create);
+    loadEditArticle();
   };
 
   articleView.create = function() {
