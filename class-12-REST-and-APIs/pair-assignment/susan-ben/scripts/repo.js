@@ -13,6 +13,8 @@
       },
       success: function(data, message, xhr){
         console.log(data);
+        repos.all = data;
+        callback();
       }
     })
 
