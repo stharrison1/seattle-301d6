@@ -13,22 +13,25 @@
   };
 
   // COMMENT: What does this method do?  What is it's execution path?
+  //Dynamically generates the dropdown menus for both authors and categories filtering.  It first grabs the handlebars template
   articleView.populateFilters = function() {
     var options,
-      template = Handlebars.compile($('#option-template').text());
+      template = Handlebars.compile($('#option-template').text()); //grabs the handlebar template and handlebars compiles the template and populates the filters.
 
     // Example of using model method with FP, synchronous approach:
     // NB: This method is dependant on info being in the DOM. Only authors of shown articles are loaded.
+
+    //For each item in the array, returns the html tag with author name in it
     options = Article.allAuthors().map(function(author) { return template({val: author}); });
-    if ($('#author-filter option').length < 2) { // Prevent duplication
-      $('#author-filter').append(options);
-    };
+    // if ($('#author-filter option').length < 2) { // Prevent duplication
+    $('#author-filter').append(options); //
+    // };
 
     // Example of using model method with async, SQL-based approach:
     // This approach is DOM-independent, since it reads from the DB directly.
-    Article.allCategories(function(rows) {
+    Article.allCategories(function(rows) {  //The Articles.allCategories function searches all the category values inside the database
       if ($('#category-filter option').length < 2) {
-        $('#category-filter').append(
+        $('#category-filter').append( //For every category in array, it creates a new option tag in the select tag for the drop down and fills in the name with the value from the array.
           rows.map(function(row) {
             return template({val: row.category});
           })

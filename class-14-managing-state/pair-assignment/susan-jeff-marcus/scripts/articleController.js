@@ -36,26 +36,28 @@
   };
 
   // COMMENT: What does this method do?  What is it's execution path?
-  articlesController.loadByCategory = function(ctx, next) {
+  //WHEN YOU CLICK ON FILTER BY CATEGORY IT FIRES THE ROUTES AND FIRES THIS FUNCTION TO FIND ARTICLES IN DATABASE AND ASSIGNS ARTICLESBYCATEGORY TO CTX.ARTICLES
+  articlesController.loadByCategory = function(ctx, next) { //
     var categoryData = function(articlesInCategory) {
-      ctx.articles = articlesInCategory;
-      next();
+      ctx.articles = articlesInCategory; //the function assigns the filtered results to the ctx.articles property.
+      next(); //calls the next callback function which is articlesController.index
     };
 
-    Article.findWhere('category', ctx.params.categoryName, categoryData);
+    Article.findWhere('category', ctx.params.categoryName, categoryData); //When URL changes, it fires this findWhere function and then retrieves the category name. Then this is used search the database for the category name. The result will be the entire article.  Then it runs the callback function categoryData defined on lines 40-41.
   };
 
   // COMMENT: What does this method do?  What is it's execution path?
+  // The articlesController.loadAll method fires when you on the home page or click the home button.  If articles are already loaded then assign article to the ctx.
   articlesController.loadAll = function(ctx, next) {
     var articleData = function(allArticles) {
       ctx.articles = Article.all;
       next();
     };
 
-    if (Article.all.length) {
+    if (Article.all.length) {  //If-else statement that if you already have articles in the object, then run the next callback function.
       ctx.articles = Article.all;
       next();
-    } else {
+    } else {  //If there are no articles in the object, then run the Article.fetchAll function to get all the articles from the database.
       Article.fetchAll(articleData);
     }
   };
