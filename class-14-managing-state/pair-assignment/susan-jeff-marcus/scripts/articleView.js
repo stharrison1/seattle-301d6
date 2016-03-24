@@ -41,49 +41,17 @@
   };
 
   // COMMENT: What does this method do?  What is it's execution path?
+// WHEN YOU CLICK ON SPECIFIC AUTHOR IN THE DROPDOWN OPTION, IT FIRES THIS FUNCTION TO CHANGE TO NEW URL CHOOSEN
   articleView.handleFilters = function() {
     $('#filters').one('change', 'select', function() {
+      //grab the id value and then removes the '-filter'.
       resource = this.id.replace('-filter', '');
+      //change the routes to for example, '/author/author'sname'
       page('/' + resource + '/' + $(this).val().replace(/\W+/g, '+')); // Replace any/all whitespace with a +
     });
   };
-  // articleView.handleAuthorFilter = function() {
-  //   $('#author-filter').on('change', function() {
-  //     if ($(this).val()) {
-  //       $('article').hide();
-  //       $('article[data-author="' + $(this).val() + '"]').fadeIn();
-  //     } else {
-  //       $('article').fadeIn();
-  //       $('article.template').hide();
-  //     }
-  //     $('#category-filter').val('');
-  //   });
-  // };
-  //
-  // articleView.handleCategoryFilter = function() {
-  //   $('#category-filter').on('change', function() {
-  //     if ($(this).val()) {
-  //       $('article').hide();
-  //       $('article[data-category="' + $(this).val() + '"]').fadeIn();
-  //     } else {
-  //       $('article').fadeIn();
-  //       $('article.template').hide();
-  //     }
-  //     $('#author-filter').val('');
-  //   });
-  // };
 
-  // DONE: Remove the setTeasers method, and replace with a plain ole link in the article template.
-  // articleView.setTeasers = function() {
-  //   $('.article-body *:nth-of-type(n+2)').hide();
-  //
-  //   $('#articles').on('click', 'a.read-on', function(e) {
-  //     e.preventDefault();
-  //     $(this).parent().find('*').fadeIn();
-  //     $(this).hide();
-  //   });
-  // };
-
+//For admin.html file
   articleView.initNewArticlePage = function() {
     $('#articles').show().siblings().hide();
 
@@ -120,17 +88,23 @@
     $('#article-json').val(JSON.stringify(article) + ',');
   };
 
+
   // COMMENT: What does this method do?  What is it's execution path?
+  //THIS FUNCITON SHOWS THE ARTICLES SECTION AND HIDE OTHER SECTIONS, AND THEN REMOVE THE OLD ARTICLE IN HTML TAG.
+  //THEN INSERT NEW ARTICLES. THEN UPDATA THE DROPDOWN MENUS BASED ON THE CURRENT DOM ELEMENTS.
   articleView.index = function(articles) {
+    
     $('#articles').show().siblings().hide();
 
     $('#articles article').remove();
+
     articles.forEach(function(a) {
       $('#articles').append(render(a));
     });
-
+    //DISPLAY THE DROPDOWN MENUS
     articleView.populateFilters();
     // COMMENT: What does this method do?  What is it's execution path?
+    // DISCRIBED ABOVE ON LINE 44
     articleView.handleFilters();
 
     // DONE: Replace setTeasers with just the truncation logic, if needed:
